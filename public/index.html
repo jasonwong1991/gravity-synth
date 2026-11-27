@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GravitySynth — Draw Physics, Play Music</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <!-- Full-bleed Physics & Visualizer Canvas -->
+    <canvas id="stageCanvas" aria-label="GravitySynth kinetic physics music canvas"></canvas>
+
+    <!-- First-interaction Audio Unlock Banner -->
+    <div id="audioBanner" class="audio-banner" role="button" tabindex="0">
+      <div class="audio-banner-pulse"></div>
+      <div class="audio-banner-text">
+        <strong data-i18n="bannerTitle">✦ GravitySynth</strong>
+        <span data-i18n="bannerSub">Click anywhere to enable spatial audio · Drag to draw glowing strings &amp; play physics</span>
+      </div>
+      <button id="startAudioBtn" class="btn btn-primary" type="button" data-i18n="bannerBtn">Enable Audio ▶</button>
+    </div>
+
+    <!-- Top Floating Glass Bar -->
+    <header class="top-bar hud-panel">
+      <div class="brand">
+        <span class="brand-mark">✦</span>
+        <div>
+          <h1 class="brand-title" data-i18n="brandTitle">GravitySynth</h1>
+          <p class="brand-sub" data-i18n="brandSub">Kinetic Physics Synthesizer</p>
+        </div>
+        <div class="live-stats">
+          <span class="stat-pill"><i class="dot"></i><span id="statOrbs">0</span> <span data-i18n="statOrbs">Orbs</span></span>
+          <span class="stat-pill"><span id="statHits">0</span> <span data-i18n="statNotes">Notes</span></span>
+        </div>
+      </div>
+
+      <nav class="preset-bar" aria-label="Demo presets">
+        <div id="presetButtons" class="preset-buttons"></div>
+        <button id="btnInspire" class="btn btn-accent" type="button" data-i18n="btnInspire" data-i18n-title="btnInspireTitle" title="Procedurally generate a brand-new kinetic music machine">
+          🎲 Inspire Me
+        </button>
+        <button id="btnGallery" class="btn btn-ghost" type="button" data-i18n="btnGallery" data-i18n-title="btnGalleryTitle" title="Save or load creations from the local gallery">
+          🎨 Gallery
+        </button>
+      </nav>
+
+      <div class="action-bar">
+        <button id="btnPlayPause" class="btn btn-icon" type="button" data-i18n-title="btnPlayPauseTitle" title="Play / Pause (P)">⏸</button>
+        <button id="btnRecord" class="btn btn-ghost" type="button" data-i18n="btnRecord" data-i18n-title="btnRecordTitle" title="Record live audio and download as .webm">● Record</button>
+        <button id="btnSnapshot" class="btn btn-ghost" type="button" data-i18n-title="btnSnapshotTitle" title="Export HD PNG snapshot">📷</button>
+        <button id="btnShare" class="btn btn-ghost" type="button" data-i18n="btnShare" data-i18n-title="btnShareTitle" title="Copy shareable scene URL">🔗 Share</button>
+        <button id="btnStageMode" class="btn btn-ghost" type="button" data-i18n="btnStageMode" data-i18n-title="btnStageModeTitle" title="Clean presentation mode (Hotkey H)">⛶ Stage</button>
+        <button id="btnLang" class="btn btn-ghost" type="button" data-i18n="btnLangToggle" data-i18n-title="btnLangTitle" title="Switch language / 切换中文">🌐 中文</button>
+      </div>
+    </header>
+
+    <!-- Left Floating Tool Dock -->
+    <aside class="tool-dock hud-panel" aria-label="Physics drawing tools">
+      <div class="dock-section-title" data-i18n="dockTools">Tools</div>
+      <div class="tool-grid" id="toolButtons">
+        <button class="tool-btn active" data-tool="string" data-i18n-title="toolStringTitle" title="Drag to draw a vibrating musical string (length = pitch) [1]">
+          <span class="tool-ico">╱</span><span class="tool-lbl" data-i18n="toolString">String</span><kbd>1</kbd>
+        </button>
+        <button class="tool-btn" data-tool="bumper" data-i18n-title="toolBumperTitle" title="Click or drag to place an elastic chime bumper (radius = pitch) [2]">
+          <span class="tool-ico">◎</span><span class="tool-lbl" data-i18n="toolBumper">Bumper</span><kbd>2</kbd>
+        </button>
+        <button class="tool-btn" data-tool="emitter" data-i18n-title="toolEmitterTitle" title="Click &amp; drag to aim a tempo-synced orb launcher [3]">
+          <span class="tool-ico">◉</span><span class="tool-lbl" data-i18n="toolEmitter">Emitter</span><kbd>3</kbd>
+        </button>
+        <button class="tool-btn" data-tool="well" data-i18n-title="toolWellTitle" title="Click for Black Hole attractor · Shift+Click for Repulsor [4]">
+          <span class="tool-ico">🌀</span><span class="tool-lbl" data-i18n="toolWell">Gravity</span><kbd>4</kbd>
+        </button>
+        <button class="tool-btn" data-tool="portal" data-i18n-title="toolPortalTitle" title="Click twice to link a wormhole pair (+1 octave shimmer) [5]">
+          <span class="tool-ico">⭮</span><span class="tool-lbl" data-i18n="toolPortal">Portal</span><kbd>5</kbd>
+        </button>
+        <button class="tool-btn" data-tool="prism" data-i18n-title="toolPrismTitle" title="Click to place a harmonic prism that splits orbs into fifths [6]">
+          <span class="tool-ico">△</span><span class="tool-lbl" data-i18n="toolPrism">Prism</span><kbd>6</kbd>
+        </button>
+        <button class="tool-btn" data-tool="orb" data-i18n-title="toolOrbTitle" title="Click or flick to manually launch sound orbs [7]">
+          <span class="tool-ico">✦</span><span class="tool-lbl" data-i18n="toolOrb">Drop Orb</span><kbd>7</kbd>
+        </button>
+        <button class="tool-btn" data-tool="move" data-i18n-title="toolMoveTitle" title="Drag existing elements or string endpoints live [V]">
+          <span class="tool-ico">✥</span><span class="tool-lbl" data-i18n="toolMove">Move</span><kbd>V</kbd>
+        </button>
+        <button class="tool-btn" data-tool="erase" data-i18n-title="toolEraseTitle" title="Click or right-click any object to delete [E]">
+          <span class="tool-ico">✕</span><span class="tool-lbl" data-i18n="toolErase">Erase</span><kbd>E</kbd>
+        </button>
+      </div>
+
+      <div class="dock-divider"></div>
+      <div class="dock-section-title" data-i18n="dockInstruments">Voices</div>
+      <div class="inst-list" id="instrumentButtons"></div>
+
+      <div class="dock-divider"></div>
+      <div class="dock-quick-actions">
+        <button id="btnUndo" class="mini-btn" type="button" data-i18n="btnUndo" data-i18n-title="btnUndoTitle" title="Undo (Cmd/Ctrl+Z)">↶ Undo</button>
+        <button id="btnClearOrbs" class="mini-btn" type="button" data-i18n="btnClearOrbs" data-i18n-title="btnClearOrbsTitle" title="Remove all active orbs">Clear Orbs</button>
+        <button id="btnClearAll" class="mini-btn danger" type="button" data-i18n="btnClearAll" data-i18n-title="btnClearAllTitle" title="Clear entire canvas">Reset Canvas</button>
+      </div>
+    </aside>
+
+    <!-- Right-Bottom Sound & Physics Rack -->
+    <aside class="control-rack hud-panel" id="controlRack" aria-label="Sound and physics controls">
+      <div class="rack-header">
+        <span data-i18n="rackTitle">🎛 Physics &amp; Synth Rack</span>
+        <button id="btnToggleRack" class="mini-icon-btn" type="button" data-i18n-title="rackToggleTitle" title="Collapse / Expand">▾</button>
+      </div>
+      <div class="rack-body" id="rackBody">
+        <div class="control-row two-col">
+          <label class="field">
+            <span data-i18n="labelScale">Harmonic Scale</span>
+            <select id="selectScale"></select>
+          </label>
+          <label class="field">
+            <span data-i18n="labelRoot">Root Key</span>
+            <select id="selectRoot"></select>
+          </label>
+        </div>
+
+        <div class="control-row">
+          <div class="slider-head">
+            <span data-i18n="labelBpm">Tempo (BPM)</span>
+            <strong id="valBpm">118</strong>
+          </div>
+          <input id="sliderBpm" type="range" min="60" max="170" step="1" value="118" />
+        </div>
+
+        <div class="control-row">
+          <div class="slider-head">
+            <span data-i18n="labelTime">Time Warp (Bullet Time)</span>
+            <strong id="valTime">1.00x</strong>
+          </div>
+          <input id="sliderTime" type="range" min="0.25" max="2.0" step="0.05" value="1.0" />
+        </div>
+
+        <div class="control-row">
+          <span class="field-label" data-i18n="labelGravity">Gravity Field</span>
+          <div class="gravity-pills" id="gravityButtons">
+            <button type="button" class="pill-btn active" data-gravity="430" data-i18n="gravEarth">Earth 1g</button>
+            <button type="button" class="pill-btn" data-gravity="220" data-i18n="gravMoon">Moon</button>
+            <button type="button" class="pill-btn" data-gravity="0" data-i18n="gravZero">Zero-G</button>
+            <button type="button" class="pill-btn" data-gravity="-300" data-i18n="gravInvert">Invert</button>
+          </div>
+        </div>
+
+        <div class="control-row two-col">
+          <label class="field">
+            <div class="slider-head"><span data-i18n="labelReverb">Space Reverb</span><strong id="valReverb">42%</strong></div>
+            <input id="sliderReverb" type="range" min="0" max="0.85" step="0.02" value="0.42" />
+          </label>
+          <label class="field">
+            <div class="slider-head"><span data-i18n="labelDelay">Stereo Delay</span><strong id="valDelay">34%</strong></div>
+            <input id="sliderDelay" type="range" min="0" max="0.75" step="0.02" value="0.34" />
+          </label>
+        </div>
+
+        <div class="control-row volume-row">
+          <button id="btnMute" class="mini-btn" type="button" data-i18n="btnMuteOn">🔊 Vol</button>
+          <input id="sliderVolume" type="range" min="0" max="1" step="0.02" value="0.78" />
+          <strong id="valVolume">78%</strong>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom Helper Hint / Stage Mode Exit -->
+    <div id="hintBar" class="hint-bar hud-panel">
+      <span id="hintText">Drag to draw glowing strings (shorter = higher pitch) · Right-click to erase · Hold Space for Bullet Time</span>
+    </div>
+
+    <button id="exitStageBtn" class="exit-stage-btn hidden" type="button" data-i18n="btnExitStage">Exit Stage Mode (H)</button>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- Local Gallery Modal -->
+    <div id="galleryModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="galleryTitle" data-i18n="galleryTitle">🎨 Local Creations Gallery</h2>
+          <button id="btnCloseGallery" class="mini-icon-btn" type="button">✕</button>
+        </div>
+        <form id="savePresetForm" class="save-form">
+          <input id="inputPresetName" type="text" maxlength="50" data-i18n-placeholder="galleryNamePlaceholder" placeholder="Name your kinetic music machine..." required />
+          <input id="inputPresetAuthor" type="text" maxlength="30" data-i18n-placeholder="galleryAuthorPlaceholder" placeholder="Your name (optional)" />
+          <button class="btn btn-primary" type="submit" data-i18n="gallerySaveBtn">Save Creation</button>
+        </form>
+        <div id="galleryList" class="gallery-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+demo/sim_data*.json
+demo/demo_audio*.wav
+*.log
