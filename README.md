@@ -3,7 +3,7 @@
 > **Draw Physics, Play Music.**
 > A **zero-dependency, 100% offline-ready** 2D astrophysics sandbox stitched together with a real-time **Web Audio modular synthesizer** — built for the **Frankenstein** Hackathon Track.
 
-[中文文档 (Chinese README)](./README.zh-CN.md) · [3-Minute Stage Pitch Script](./PITCH.md) · [English Demo Video](./demo/gravity-synth-demo-en.mp4)
+[🚀 Try It Live on GitHub Pages](https://jasonwong1991.github.io/gravity-synth/) · [中文文档 (Chinese README)](./README.zh-CN.md) · [3-Minute Stage Pitch Script](./PITCH.md) · [English Demo Video](./demo/gravity-synth-demo-en.mp4)
 
 ---
 

@@ -465,19 +465,40 @@ function toggleStageMode(forceVal) {
   if (active) showToast(dict().toasts.stageEntered, 1800);
 }
 
+const LOCAL_GALLERY_KEY = 'gravity-synth-local-gallery';
+
+function readLocalGallery() {
+  try {
+    const raw = window.localStorage.getItem(LOCAL_GALLERY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalGallery(items) {
+  try {
+    window.localStorage.setItem(LOCAL_GALLERY_KEY, JSON.stringify(items.slice(0, 30)));
+  } catch {
+    // ignore quota errors
+  }
+}
+
 async function openGallery() {
   galleryModal.classList.remove('hidden');
   galleryList.innerHTML = `<div class="gallery-empty">${escapeHtml(dict().galleryLoading)}</div>`;
   try {
     const res = await fetch('/api/presets');
+    if (!res.ok) throw new Error('API unavailable');
     const data = await res.json();
-    renderGalleryList(data.presets || []);
+    renderGalleryList(data.presets || [], false);
   } catch {
-    galleryList.innerHTML = `<div class="gallery-empty">${escapeHtml(dict().galleryOffline)}</div>`;
+    renderGalleryList(readLocalGallery(), true);
   }
 }
 
-function renderGalleryList(presets) {
+function renderGalleryList(presets, useLocalStorage = false) {
   const d = dict();
   if (!presets.length) {
     galleryList.innerHTML = `<div class="gallery-empty">${escapeHtml(d.galleryEmpty)}</div>`;
@@ -508,7 +529,11 @@ function renderGalleryList(presets) {
       showToast(dict().toasts.galleryLoaded(item.name));
     });
     row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
-      await fetch(`/api/presets/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+      if (useLocalStorage) {
+        writeLocalGallery(readLocalGallery().filter((p) => p.id !== item.id));
+      } else {
+        await fetch(`/api/presets/${encodeURIComponent(item.id)}`, { method: 'DELETE' }).catch(() => {});
+      }
       openGallery();
     });
     galleryList.appendChild(row);
@@ -520,18 +545,30 @@ async function handleSavePreset(e) {
   const name = inputPresetName.value.trim();
   if (!name) return;
   const author = inputPresetAuthor.value.trim() || 'Hackathon Creator';
+  const scene = serializeScene(world);
   try {
     const res = await fetch('/api/presets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, author, scene: serializeScene(world) }),
+      body: JSON.stringify({ name, author, scene }),
     });
     if (!res.ok) throw new Error('Save failed');
     inputPresetName.value = '';
     showToast(dict().toasts.gallerySaved(name));
     openGallery();
   } catch {
-    showToast(dict().toasts.gallerySaveFailed);
+    const list = readLocalGallery();
+    list.unshift({
+      id: `local-${Date.now().toString(36)}`,
+      name,
+      author,
+      createdAt: new Date().toISOString(),
+      scene,
+    });
+    writeLocalGallery(list);
+    inputPresetName.value = '';
+    showToast(dict().toasts.gallerySaved(name));
+    openGallery();
   }
 }
 
