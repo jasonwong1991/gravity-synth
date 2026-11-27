@@ -3,7 +3,21 @@
 > **用物理画音乐 — Draw Physics, Play Music.**
 > 一个**零外部依赖、离线可跑、打开即惊艳**的 2D 物理引力与生成式 Web Audio 音乐合成器，为黑客松 **Frankenstein** 赛道现场演示而生。
 
-[English README](./README.md) · [中文路演剧本](./PITCH.zh-CN.md) · [英文路演剧本](./PITCH.md)
+[🚀 在线立即体验 (GitHub Pages)](https://jasonwong1991.github.io/gravity-synth/) · [English README](./README.md) · [中文路演剧本](./PITCH.zh-CN.md) · [英文路演剧本](./PITCH.md)
+
+![GravitySynth 引力音轨](./demo/screenshots/00-hero-cover-3x2.jpg)
+
+---
+
+## 📸 界面与场景预览
+
+| 赛博雨夜（发光琴弦 + 虫洞循环） | 星轨钟摆（0g 黑洞时空扭曲 + 子弹时间） |
+| :---: | :---: |
+| ![赛博雨夜](./demo/screenshots/01-cyberpunk-rain-3x2.jpg) | ![星轨钟摆](./demo/screenshots/02-orbital-blackhole-3x2.jpg) |
+
+| 量子分形（和声棱镜裂变） | 霓虹弹珠（808 鼓点 + 斥力场 + 频谱） |
+| :---: | :---: |
+| ![量子分形](./demo/screenshots/03-quantum-prisms-3x2.jpg) | ![霓虹弹珠](./demo/screenshots/04-neon-pinball-3x2.jpg) |
 
 ---
 

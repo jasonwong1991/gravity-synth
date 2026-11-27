@@ -5,6 +5,20 @@
 
 [🚀 Try It Live on GitHub Pages](https://jasonwong1991.github.io/gravity-synth/) · [中文文档 (Chinese README)](./README.zh-CN.md) · [3-Minute Stage Pitch Script](./PITCH.md) · [English Demo Video](./demo/gravity-synth-demo-en.mp4)
 
+![GravitySynth — Draw Physics, Play Music](./demo/screenshots/00-hero-cover-3x2.jpg)
+
+---
+
+## 📸 Screenshots
+
+| Cyberpunk Rain (Strings + Wormholes) | Orbital Clockwork (0g Black Hole + Bullet Time) |
+| :---: | :---: |
+| ![Cyberpunk Rain](./demo/screenshots/01-cyberpunk-rain-3x2.jpg) | ![Orbital Clockwork](./demo/screenshots/02-orbital-blackhole-3x2.jpg) |
+
+| Quantum Cascade (Harmonic Prism Split) | Neon Pinball (808 Drums + Repulsor Field) |
+| :---: | :---: |
+| ![Quantum Cascade](./demo/screenshots/03-quantum-prisms-3x2.jpg) | ![Neon Pinball](./demo/screenshots/04-neon-pinball-3x2.jpg) |
+
 ---
 
 ## ⚡ Why Frankenstein?
